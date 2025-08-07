@@ -33,7 +33,7 @@ Modular.execute(CustomStartAnnotation::class.java)
 Sometimes we need to be able to call these annotated functions with arguments, which can be done by adding arguments
 onto the end of the Modular execute call like this:
 ```kotlin
-Modular.execute(CustomStartAnnotation::class.java, "Test String", 123, false)
+Modular.execute(CustomStartAnnotation::class.java, arrayOf("Test String", 123, false))
 ```
 These arguments will be type tested by the `execute` call before pasting to functions so any marked functions that has
 a different number of arguments or arguments of differing types than those passed to the `execute` function will fail

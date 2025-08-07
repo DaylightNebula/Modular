@@ -8,5 +8,5 @@ object TestKotlin {
     fun onShutdown() = println("TestKotlin onShutdown")
 
     @OnReload
-    fun onReload() = println("TestKotlin onReload")
+    fun onReload(test: String) = println("TestKotlin onReload: $test")
 }

@@ -1,4 +1,4 @@
-rootProject.name = "modular"
+rootProject.name = "Modular"
 
 include(":modular-annotations")
 include(":modular-executor")

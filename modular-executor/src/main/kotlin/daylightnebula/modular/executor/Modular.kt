@@ -23,31 +23,44 @@ object Modular {
         listeners = output
     }
 
-    fun execute(clazz: Class<out Annotation>) = execute("${clazz.packageName}.${clazz.simpleName}")
-    fun execute(packagePath: String) = listeners[packagePath]?.forEach(this::executeFunction)
+//    fun execute(clazz: Class<out Annotation>, parameters: List<Any?>) =
+//        execute("${clazz.packageName}.${clazz.simpleName}", *parameters.toTypedArray())
+    fun execute(clazz: Class<out Annotation>, parameters: Array<Any?> = arrayOf()) =
+        execute("${clazz.packageName}.${clazz.simpleName}", parameters)
 
-    private fun executeFunction(info: FunctionInfo) = invokeMethod(info.functionType, info.fullPath)
+//    fun execute(packagePath: String, parameters: List<Any?>) =
+//        listeners[packagePath]?.forEach { executeFunction(it, parameters.toTypedArray()) }
+    fun execute(packagePath: String, parameters: Array<Any?> = arrayOf()) =
+        listeners[packagePath]?.forEach { executeFunction(it, parameters) }
 
-    fun invokeMethod(functionType: FunctionType, fullPath: String) {
-        println("Calling $functionType -> $fullPath")
-        when (functionType) {
-            FunctionType.JAVA_STATIC -> invokeJavaStatic(fullPath)
-            FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(fullPath)
-            FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(fullPath)
+    private fun executeFunction(info: FunctionInfo, parameters: Array<Any?>) {
+        val parameterTypes: Array<Class<*>?> = parameters.map { it?.javaClass }.toTypedArray()
+        when (info.functionType) {
+            FunctionType.JAVA_STATIC -> invokeJavaStatic(info.fullPath, parameterTypes, parameters)
+            FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(info.fullPath, parameterTypes, parameters)
+            FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(info.fullPath, parameterTypes, parameters)
             FunctionType.INSTANCE_METHOD -> throw UnsupportedOperationException("Instance methods are not supported.")
         }
     }
 
-    private fun invokeJavaStatic(fullPath: String) {
+    private fun invokeJavaStatic(
+        fullPath: String,
+        parameterTypes: Array<Class<*>?>,
+        parameters: Array<Any?>
+    ) {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
         val clazz = Class.forName(className)
-        val method = clazz.getMethod(methodName)
-        method.invoke(null)
+        val method = try { clazz.getMethod(methodName, *parameterTypes) } catch (e: Exception) { null }
+        method?.invoke(null, *parameters)
     }
 
-    private fun invokeCompanionMethod(fullPath: String) {
+    private fun invokeCompanionMethod(
+        fullPath: String,
+        parameterTypes: Array<Class<*>?>,
+        parameters: Array<Any?>
+    ) {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
@@ -56,17 +69,21 @@ object Modular {
         val companionField = outerClass.getDeclaredField("Companion")
         companionField.isAccessible = true
         val companionInstance = companionField.get(null)
-        val method = companionInstance.javaClass.getMethod(methodName)
-        method.invoke(companionInstance)
+        val method = try { companionInstance.javaClass.getMethod(methodName, *parameterTypes) } catch (e: NoSuchMethodException) { null }
+        method?.invoke(companionInstance, *parameters)
     }
 
-    private fun invokeObjectMethod(fullPath: String) {
+    private fun invokeObjectMethod(
+        fullPath: String,
+        parameterTypes: Array<Class<*>?>,
+        parameters: Array<Any?>
+    ) {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
         val objectClass = Class.forName(className)
         val objectInstance = objectClass.getDeclaredField("INSTANCE").get(null)
-        val method = objectClass.getMethod(methodName)
-        method.invoke(objectInstance)
+        val method = try { objectClass.getMethod(methodName, *parameterTypes) } catch (e: NoSuchMethodException) { null }
+        method?.invoke(objectInstance, *parameters)
     }
 }

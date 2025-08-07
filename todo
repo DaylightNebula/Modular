@@ -7,3 +7,10 @@
 1754531424054|a2a87100-c2ec-4c2a-a1fd-1c2f4fcaa20a|{"type":"set_completed","completed":true}
 1754531424473|2828aca9-73e2-4ff7-b928-72f69965a9cd|{"type":"set_completed","completed":true}
 1754531486654|dd4156b0-2659-4015-8053-7f056ccee248|{"type":"create","title":"Make sure build jar B can access annotations from A"}
+1754531947761|089515f5-a321-44ee-9968-ef43a039b26f|{"type":"set_completed","completed":true}
+1754532024262|10887c15-f64d-4ace-8f5b-0c5f2d9df047|{"type":"create","title":"Minestom Support (@Load, @Enable, @Disable)"}
+1754532028032|74829471-e21a-4a86-8215-fca50114c888|{"type":"create","title":"Minestom: @Event"}
+1754532100039|87a6122a-469e-48a9-92fe-1ef9fe6057d8|{"type":"create","title":"Allow annotations to specify parameters"}
+1754532108609|f9d72857-0044-4aa4-befe-56cbc3259538|{"type":"create","title":"Minestom @Command"}
+1754541057816|467ebce1-4afa-4e55-ade4-409888533204|{"type":"set_completed","completed":true}
+1754541058300|7e5c8af4-1b5e-4bab-ba65-3981bdd8934e|{"type":"set_completed","completed":true}
