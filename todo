@@ -1,0 +1,6 @@
+1754458801385|a2a87100-c2ec-4c2a-a1fd-1c2f4fcaa20a|{"type":"create","title":"Allow for custom annotations"}
+1754458809021|2828aca9-73e2-4ff7-b928-72f69965a9cd|{"type":"create","title":"Execute off of annotation class"}
+1754458821463|467ebce1-4afa-4e55-ade4-409888533204|{"type":"create","title":"Allow for arguments"}
+1754458855198|467ebce1-4afa-4e55-ade4-409888533204|{"type":"set_title","title":"Allow for arguments"}
+1754458921184|7e5c8af4-1b5e-4bab-ba65-3981bdd8934e|{"type":"create","title":"Make sure arguments are restricted by type"}
+1754459381933|089515f5-a321-44ee-9968-ef43a039b26f|{"type":"create","title":"Set projects name and version"}
