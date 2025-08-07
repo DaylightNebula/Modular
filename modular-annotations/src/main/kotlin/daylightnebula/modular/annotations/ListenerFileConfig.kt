@@ -4,12 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ListenerFileConfig(
-    val listeners: MutableMap<AnnotationOption, MutableList<FunctionInfo>>
+    // map of annotation class -> list of functions to execute
+    val listeners: MutableMap<String, MutableList<FunctionInfo>>
 ) {
     constructor(): this(mutableMapOf())
 
-    fun append(option: AnnotationOption, function: FunctionInfo) =
-        listeners.computeIfAbsent(option) { mutableListOf() }.add(function)
+    fun append(annotationClass: String, function: FunctionInfo) =
+        listeners.computeIfAbsent(annotationClass) { mutableListOf() }.add(function)
 
     fun append(other: ListenerFileConfig) =
         other.listeners.forEach { (option, functions) ->

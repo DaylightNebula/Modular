@@ -1,7 +1,5 @@
 package daylightnebula.modular.test
 
-import daylightnebula.modular.annotations.OnStartup
-
 class TestKotlin2 {
     companion object {
         @OnStartup

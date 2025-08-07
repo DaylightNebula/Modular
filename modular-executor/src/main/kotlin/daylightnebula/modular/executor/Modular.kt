@@ -1,18 +1,18 @@
 package daylightnebula.modular.executor
 
-import daylightnebula.modular.annotations.AnnotationOption
 import daylightnebula.modular.annotations.FunctionInfo
 import daylightnebula.modular.annotations.FunctionType
+import daylightnebula.modular.annotations.ModularAnnotation
 
 object Modular {
-    val listeners: Map<AnnotationOption, List<FunctionInfo>>
+    val listeners: Map<String, List<FunctionInfo>>
 
     init {
         // initialize resources
         ResourceLoader.init(System.getProperty("java.class.path").split(":"))
 
         // load listeners
-        val output = mutableMapOf<AnnotationOption, MutableList<FunctionInfo>>()
+        val output = mutableMapOf<String, MutableList<FunctionInfo>>()
         ResourceLoader.getConfigs().forEach { (fileName, config) ->
             config.listeners.forEach { (option, functions) ->
                 output
@@ -23,7 +23,8 @@ object Modular {
         listeners = output
     }
 
-    fun execute(option: AnnotationOption) = listeners[option]?.forEach(this::executeFunction)
+    fun execute(clazz: Class<out Annotation>) = execute("${clazz.packageName}.${clazz.simpleName}")
+    fun execute(packagePath: String) = listeners[packagePath]?.forEach(this::executeFunction)
 
     private fun executeFunction(info: FunctionInfo) = invokeMethod(info.functionType, info.fullPath)
 

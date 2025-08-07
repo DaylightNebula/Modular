@@ -1,9 +1,9 @@
 package daylightnebula.modular.processor
 
-import daylightnebula.modular.annotations.AnnotationOption
 import daylightnebula.modular.annotations.FunctionInfo
 import daylightnebula.modular.annotations.FunctionType
 import daylightnebula.modular.annotations.ListenerFileConfig
+import daylightnebula.modular.annotations.ModularAnnotation
 import kotlinx.serialization.json.Json
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
@@ -32,16 +32,23 @@ class ModularAnnotationProcessor: AbstractProcessor() {
         annotations: Set<TypeElement>,
         environment: RoundEnvironment
     ): Boolean {
-        val writeQueue = mutableMapOf<String, ListenerFileConfig>()
+        // get our annotations
+        val elements = environment.getElementsAnnotatedWith(ModularAnnotation::class.java)
+            .mapNotNull { it as? TypeElement }
 
         // fill write queue via annotation options and elements annotated with our annotation options
-        for (option in AnnotationOption.entries) {
-            for (element in environment.getElementsAnnotatedWith(option.annotationClass)) {
+        val writeQueue = mutableMapOf<String, ListenerFileConfig>()
+        for (option in elements) {
+            for (element in environment.getElementsAnnotatedWith(option)) {
                 val element = element as? ExecutableElement ?: continue
                 val parentClass = element.enclosingElement as? TypeElement ?: continue
 
-                val fileQueue = writeQueue.computeIfAbsent(parentClass.qualifiedName.toString()) { ListenerFileConfig() }
-                fileQueue.append(option, analyzeFunctionType(element))
+                val fileQueue = writeQueue
+                    .computeIfAbsent(parentClass.qualifiedName.toString()) { ListenerFileConfig() }
+                fileQueue.append(
+                    option.qualifiedName.toString(),
+                    analyzeFunctionType(element)
+                )
             }
         }
 
