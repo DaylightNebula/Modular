@@ -1,7 +1,6 @@
 package daylightnebula.modular.executor
 
 import daylightnebula.modular.annotations.ListenerFileConfig
-import daylightnebula.modular.executor.ResourceLoader.configFiles
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.jar.JarFile
@@ -30,8 +29,11 @@ object ResourceLoader {
 
                         jar.getInputStream(entry).use { stream ->
                             stream.reader().use { reader ->
-                                val config = json.decodeFromString<ListenerFileConfig>(reader.readText())
-                                configFiles[fullName] = config
+                                val text = reader.readText()
+                                try {
+                                    val config = json.decodeFromString<ListenerFileConfig>(text)
+                                    configFiles[fullName] = config
+                                } catch (ex: Exception) {}
                             }
                         }
                     }

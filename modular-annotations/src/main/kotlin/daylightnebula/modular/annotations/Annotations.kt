@@ -1,5 +1,5 @@
 package daylightnebula.modular.annotations
 
 @Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ModularAnnotation

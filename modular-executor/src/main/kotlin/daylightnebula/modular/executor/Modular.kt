@@ -2,12 +2,11 @@ package daylightnebula.modular.executor
 
 import daylightnebula.modular.annotations.FunctionInfo
 import daylightnebula.modular.annotations.FunctionType
-import daylightnebula.modular.annotations.ModularAnnotation
 
 object Modular {
-    val listeners: Map<String, List<FunctionInfo>>
+    lateinit var listeners: Map<String, List<FunctionInfo>>
 
-    init {
+    fun init() {
         // initialize resources
         ResourceLoader.init(System.getProperty("java.class.path").split(":"))
 
