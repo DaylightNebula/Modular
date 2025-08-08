@@ -3,7 +3,12 @@ package daylightnebula.modular.minestom
 import daylightnebula.modular.annotations.ModularAnnotation
 import daylightnebula.modular.executor.Modular
 import net.minestom.server.MinecraftServer
+import net.minestom.server.event.Event
+import net.minestom.server.event.EventListener
+import net.minestom.server.event.EventNode.event
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
+import org.reflections.Reflections
+import java.lang.reflect.Modifier
 
 @ModularAnnotation
 @Target(AnnotationTarget.FUNCTION)
@@ -13,15 +18,23 @@ annotation class Enable()
 @ModularAnnotation
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class AsyncPlayerConfiguration()
+annotation class Event()
 
 @Enable
 fun setupMinestomListeners() {
     println("Setting up Minestom listener")
-    MinecraftServer.getGlobalEventHandler()
-        .addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-            Modular.execute(AsyncPlayerConfiguration::class.java, arrayOf(event))
-        }
+
+    val eventClasses = Reflections("net.minestom.server.event")
+        .getSubTypesOf(Event::class.java)
+        .filter { !Modifier.isAbstract(it.modifiers) && !it.isInterface }
+        .toSet()
+
+    for (eventClass in eventClasses) {
+        MinecraftServer.getGlobalEventHandler()
+            .addListener(eventClass) { event ->
+                Modular.execute(daylightnebula.modular.minestom.Event::class.java, arrayOf(event))
+            }
+    }
 }
 
 fun startMinestomServer() {

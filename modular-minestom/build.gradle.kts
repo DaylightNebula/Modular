@@ -12,4 +12,5 @@ dependencies {
     kapt(project(":modular-processor"))
     implementation(project(":modular-annotations"))
     implementation(project(":modular-executor"))
+    implementation("org.reflections:reflections:0.10.2")
 }

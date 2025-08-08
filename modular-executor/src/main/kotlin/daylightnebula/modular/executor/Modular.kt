@@ -33,56 +33,47 @@ object Modular {
         listeners[packagePath]?.forEach { executeFunction(it, parameters) }
 
     private fun executeFunction(info: FunctionInfo, parameters: Array<Any?>) {
+        // get input parameter types
         val parameterTypes: Array<Class<*>?> = parameters.map { it?.javaClass }.toTypedArray()
-        when (info.functionType) {
-            FunctionType.JAVA_STATIC -> invokeJavaStatic(info.fullPath, parameterTypes, parameters)
-            FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(info.fullPath, parameterTypes, parameters)
-            FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(info.fullPath, parameterTypes, parameters)
+
+        // get class and an instance to call the functions from
+        val (instance, methodName, clazz) = when (info.functionType) {
+            FunctionType.JAVA_STATIC -> invokeJavaStatic(info.fullPath) ?: return
+            FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(info.fullPath)
+            FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(info.fullPath)
             FunctionType.INSTANCE_METHOD -> throw UnsupportedOperationException("Instance methods are not supported.")
         }
+
+        // find and call method
+        val method = try { clazz.getMethod(methodName, *parameterTypes) } catch (_: Exception) { null }
+        method?.invoke(instance, *parameters)
     }
 
-    private fun invokeJavaStatic(
-        fullPath: String,
-        parameterTypes: Array<Class<*>?>,
-        parameters: Array<Any?>
-    ) {
+    private fun invokeJavaStatic(fullPath: String): Triple<Any?, String, Class<*>>? {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
-        val clazz = Class.forName(className)
-        val method = try { clazz.getMethod(methodName, *parameterTypes) } catch (e: Exception) { null }
-        method?.invoke(null, *parameters)
+        val clazz = Class.forName(className) ?: return null
+        return Triple(null, methodName, clazz)
     }
 
-    private fun invokeCompanionMethod(
-        fullPath: String,
-        parameterTypes: Array<Class<*>?>,
-        parameters: Array<Any?>
-    ) {
+    private fun invokeCompanionMethod(fullPath: String): Triple<Any?, String, Class<*>> {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
-
         val outerClass = Class.forName(className)
         val companionField = outerClass.getDeclaredField("Companion")
         companionField.isAccessible = true
         val companionInstance = companionField.get(null)
-        val method = try { companionInstance.javaClass.getMethod(methodName, *parameterTypes) } catch (e: NoSuchMethodException) { null }
-        method?.invoke(companionInstance, *parameters)
+        return Triple(companionInstance, methodName, companionInstance.javaClass)
     }
 
-    private fun invokeObjectMethod(
-        fullPath: String,
-        parameterTypes: Array<Class<*>?>,
-        parameters: Array<Any?>
-    ) {
+    private fun invokeObjectMethod(fullPath: String): Triple<Any?, String, Class<*>> {
         val (className, methodName) = fullPath.split(".").let {
             it.dropLast(1).joinToString(".") to it.last()
         }
         val objectClass = Class.forName(className)
         val objectInstance = objectClass.getDeclaredField("INSTANCE").get(null)
-        val method = try { objectClass.getMethod(methodName, *parameterTypes) } catch (e: NoSuchMethodException) { null }
-        method?.invoke(objectInstance, *parameters)
+        return Triple(objectInstance, methodName, objectClass)
     }
 }
