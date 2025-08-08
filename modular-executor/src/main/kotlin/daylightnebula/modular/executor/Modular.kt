@@ -32,17 +32,19 @@ object Modular {
     fun execute(packagePath: String, parameters: Array<Any?> = arrayOf()) =
         listeners[packagePath]?.forEach { executeFunction(it, parameters) }
 
-    private fun executeFunction(info: FunctionInfo, parameters: Array<Any?>) {
+    fun reflectFunction(info: FunctionInfo) = when (info.functionType) {
+        FunctionType.JAVA_STATIC -> invokeJavaStatic(info.fullPath)
+        FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(info.fullPath)
+        FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(info.fullPath)
+        FunctionType.INSTANCE_METHOD -> throw UnsupportedOperationException("Instance methods are not supported.")
+    }
+
+    fun executeFunction(info: FunctionInfo, parameters: Array<Any?>) {
+        // get class and an instance to call the functions from
+        val (instance, methodName, clazz) = reflectFunction(info) ?: return
+
         // get input parameter types
         val parameterTypes: Array<Class<*>?> = parameters.map { it?.javaClass }.toTypedArray()
-
-        // get class and an instance to call the functions from
-        val (instance, methodName, clazz) = when (info.functionType) {
-            FunctionType.JAVA_STATIC -> invokeJavaStatic(info.fullPath) ?: return
-            FunctionType.KOTLIN_COMPANION_OBJECT -> invokeCompanionMethod(info.fullPath)
-            FunctionType.KOTLIN_OBJECT -> invokeObjectMethod(info.fullPath)
-            FunctionType.INSTANCE_METHOD -> throw UnsupportedOperationException("Instance methods are not supported.")
-        }
 
         // find and call method
         val method = try { clazz.getMethod(methodName, *parameterTypes) } catch (_: Exception) { null }

@@ -6,15 +6,17 @@ needing to implicitly define listeners.
 
 While this project is written in Kotlin, it is designed to work with any JVM language that supports annotations.
 
-## An example
+### An example
 You can write your annotations like this.
 ```
 // In Java
+@ModularAnnotation
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
 public @interface CustomStartAnnotation() {}
 
 // In Kotlin
+@ModularAnnotation
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
 annotation class CustomStartAnnotation()
@@ -29,7 +31,7 @@ Modular.INSTANCE.execute(CustomStartAnnotation.class);
 Modular.execute(CustomStartAnnotation::class.java)
 ```
 
-## What about function arguments?
+### What about function arguments?
 Sometimes we need to be able to call these annotated functions with arguments, which can be done by adding arguments
 onto the end of the Modular execute call like this:
 ```kotlin
@@ -41,12 +43,36 @@ silently.  This is to allow for users to define more generic annotations like `@
 with any event, but only marked functions with the event of the same type as what was passed to the `execute` function will
 be run.
 
-## How do I use this?
+### How do I use this?
 To use this library, you only need to define your own annotations and include the following annotation processor and executor
 using these two lines in your gradle dependencies:
 ```kotlin
 dependencies {
     annotationProcessor("io.github.DaylightNebula:Modular-Processor:<VERSION>")
+}
+```
+
+### Executor
+To execute and use your annotations, you will need to write code to execute those functions.  Here's an example from the
+Minestom executor of how to initialize `Modular` and then run the `@Enable` annotations.
+
+```kotlin
+fun startMinestomServer() {
+    // ... Initialize Minestom server
+    Modular.init()
+    Modular.execute(Enable::class.java, arrayOf())
+}
+```
+
+Note: The `Modular.init()` function must be called before any `execute` calls are made as this is what loads all of your
+listeners and prepares the information that Modular may need for executing your annotated functions.
+
+This requires the Modular Executor library.
+```kotlin
+dependencies {
     implementation("io.github.DaylightNebula:Modular-Executor:<VERSION>")
 }
 ```
+
+## Minestom
+TODO: write me
