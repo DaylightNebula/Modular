@@ -4,7 +4,7 @@ plugins {
 
 subprojects {
     group = "com.github.DaylightNebula"
-    version = "0.1-SNAPSHOT"
+    version = "0.1"
 
     apply(plugin = "java")
 
