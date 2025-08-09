@@ -49,7 +49,7 @@ To use this library, you only need to define your own annotations and include th
 using these two lines in your gradle dependencies:
 ```kotlin
 dependencies {
-    annotationProcessor("io.github.DaylightNebula:Modular-Processor:<VERSION>")
+    annotationProcessor("io.github.DaylightNebula:modular-processor:0.1")
 }
 ```
 
@@ -79,10 +79,10 @@ repositories {
 
 dependencies {
     // For java projects
-    annotationProcessor("com.github.DaylightNebula:modular-processor:<VERSION>")
+    annotationProcessor("com.github.DaylightNebula:modular-processor:0.1")
     
     // For kotlin projects (will require the kapt plugin)
-    kapt("com.github.DaylightNebula:modular-processor:<VERSION>")
+    kapt("com.github.DaylightNebula:modular-processor:0.1")
 }
 ```
 
@@ -91,7 +91,7 @@ If you are writing your own executor, you will need to implement the executor li
 
 ```kts
 dependencies {
-    implementation("com.github.DaylightNebula:modular-processor:<VERSION>")
+    implementation("com.github.DaylightNebula:modular-processor:0.1")
 }
 ```
 
@@ -99,7 +99,7 @@ If you want to use the Minestom library module to ease your Minestom experience,
 
 ```kts
 dependencies {
-    implementation("com.github.DaylightNebula:modular-minestom:<VERSION>")
+    implementation("com.github.DaylightNebula:modular-minestom:0.1")
 }
 ```
 
