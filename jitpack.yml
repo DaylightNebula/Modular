@@ -1,0 +1,6 @@
+jdk:
+  - openjdk11
+#before_install:
+#  - ./scripts/prepareJitPackEnvironment.sh
+install:
+  - ./gradlew clean build publishToMavenLocal -xtest

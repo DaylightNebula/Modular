@@ -8,6 +8,11 @@ subprojects {
 
     apply(plugin = "java")
 
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     // publish non tests
     if (!project.name.contains("Test")) {
         apply(plugin = "maven-publish")
