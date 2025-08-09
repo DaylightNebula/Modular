@@ -24,7 +24,7 @@ import javax.tools.StandardLocation
 import kotlin.collections.emptyList
 
 @SupportedAnnotationTypes("*")
-@SupportedSourceVersion(SourceVersion.RELEASE_24)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 class ModularAnnotationProcessor: AbstractProcessor() {
     companion object {
         val json = Json {

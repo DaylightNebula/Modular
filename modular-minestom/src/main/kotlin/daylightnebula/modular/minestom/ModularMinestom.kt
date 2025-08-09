@@ -63,7 +63,7 @@ fun setupMinestomListeners() {
             // save commands method, instance, and command information to the above map
             val tokens = annotation.command.split(" ", limit = 2)
             val list = commands.computeIfAbsent(tokens.first()) { mutableListOf() }
-            list.add(CommandInfo(tokens.last(), instance, method))
+            list.add(CommandInfo(if(tokens.size < 2) "" else tokens.last(), instance, method))
         }
     }
 
@@ -102,6 +102,7 @@ fun setupMinestomListeners() {
 }
 
 private fun matchCommandArgs(info: CommandInfo, args: Array<out String>): Boolean {
+    if (args.isEmpty() && info.args.isEmpty()) return true
     val tokens = info.args.split(" ")
     return (0 until tokens.size).all { idx ->
         // get token and make sure it's not ignorable

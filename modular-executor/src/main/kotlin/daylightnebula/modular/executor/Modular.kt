@@ -22,13 +22,9 @@ object Modular {
         listeners = output
     }
 
-//    fun execute(clazz: Class<out Annotation>, parameters: List<Any?>) =
-//        execute("${clazz.packageName}.${clazz.simpleName}", *parameters.toTypedArray())
     fun execute(clazz: Class<out Annotation>, parameters: Array<Any?> = arrayOf()) =
         execute("${clazz.packageName}.${clazz.simpleName}", parameters)
 
-//    fun execute(packagePath: String, parameters: List<Any?>) =
-//        listeners[packagePath]?.forEach { executeFunction(it, parameters.toTypedArray()) }
     fun execute(packagePath: String, parameters: Array<Any?> = arrayOf()) =
         listeners[packagePath]?.forEach { executeFunction(it, parameters) }
 
@@ -46,7 +42,7 @@ object Modular {
         // get input parameter types
         val parameterTypes: Array<Class<*>?> = parameters.map { it?.javaClass }.toTypedArray()
 
-        // find and call method
+        // find method
         val method = try { clazz.getMethod(methodName, *parameterTypes) } catch (_: Exception) { null }
         method?.invoke(instance, *parameters)
     }
